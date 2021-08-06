@@ -3,9 +3,8 @@ import Head from 'next/head'
 import { connectToDatabase } from '../lib/mongodb'
 import { useState } from 'react';
 
-const port = process.env.PORT || "http://localhost:3000";
 
-export default function Home({ properties }) {
+export default function Home({ properties, port }) {
 
   const [bnbs, setBnbs] = useState(properties);
 
@@ -133,8 +132,13 @@ export async function getServerSideProps(context) {
       price: price.$numberDecimal,
     }
   });
+
+  const port = process.env.PORT || "http://localhost:3000";
   return {
-    props: { properties: filtered },
+    props: { 
+      properties: filtered,
+      port: port,
+    },
   }
 }
 
