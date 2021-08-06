@@ -3,12 +3,14 @@ import Head from 'next/head'
 import { connectToDatabase } from '../lib/mongodb'
 import { useState } from 'react';
 
+const port = process.env.PORT || "http://localhost:3000";
+
 export default function Home({ properties }) {
 
   const [bnbs, setBnbs] = useState(properties);
 
   const book = async (property) => {
-    const res = await fetch("http://localhost:3000/api/book", {
+    const res = await fetch(`${port}/api/book`, {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -24,11 +26,11 @@ export default function Home({ properties }) {
   const search = async (e) => {
     e.preventDefault();
     if ( term ) {
-      const res = await fetch(`http://localhost:3000/api/search?term=${term}`);
+      const res = await fetch(`${port}/api/search?term=${term}`);
       const data = await res.json();
       setBnbs(data);
     } else {
-      const res = await fetch('http://localhost:3000/api/getBnbData');
+      const res = await fetch(`${port}/api/getBnbData`);
       const data = await res.json();
       setBnbs(data);
     }
@@ -38,7 +40,7 @@ export default function Home({ properties }) {
   return (
     <div>
       <Head>
-        <title>Next BNB</title>
+        <title>Next BNB </title>
         <link rel="icon" href="/favicon.ico" />
         <link rel="stylesheet" href="https://unpkg.com/tailwindcss@1.0/dist/tailwind.min.css" />
       </Head>
