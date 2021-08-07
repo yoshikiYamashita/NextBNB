@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 
 export default function Home({ properties, port }) {
+  console.log('port: ', port);
   
   const [bnbs, setBnbs] = useState(properties);
 
