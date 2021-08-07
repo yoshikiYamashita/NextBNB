@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 
 export default function Home({ properties, port }) {
-
+  
   const [bnbs, setBnbs] = useState(properties);
 
   const book = async (property) => {
@@ -21,9 +21,11 @@ export default function Home({ properties, port }) {
     console.log(data);
   }
 
+  const [isLoading, setIsLoading] = useState(false);
   const [term, setTerm] = useState('');
   const search = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if ( term ) {
       const res = await fetch(`${port}/api/search?term=${term}`);
       const data = await res.json();
@@ -33,6 +35,7 @@ export default function Home({ properties, port }) {
       const data = await res.json();
       setBnbs(data);
     }
+    setIsLoading(false);
   }
   
 
@@ -79,7 +82,14 @@ export default function Home({ properties, port }) {
 
         <div className="flex flex-row flex-wrap">
           {
-            bnbs && bnbs.map(property => (
+            isLoading && (
+              <div className="w-full text-center">
+                <h1 className="font-bold">Now Loading...</h1>
+              </div>
+            )
+          } 
+          {
+            bnbs && !isLoading && bnbs.map(property => (
 
                 <div className="flex-auto w-1/4 rounded overflow-hidden shadow-lg m-2" key={property._id}>
                   <img className="w-full" src={property.image} alt="" />
@@ -133,7 +143,7 @@ export async function getServerSideProps(context) {
     }
   });
 
-  const port = process.env.PORT || "http://localhost:3000";
+  const port = process.env.PORT;
   return {
     props: { 
       properties: filtered,
