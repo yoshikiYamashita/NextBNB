@@ -5,7 +5,6 @@ import { useState } from 'react';
 
 
 export default function Home({ properties, port }) {
-  console.log('port: ', port);
   
   const [bnbs, setBnbs] = useState(properties);
 
@@ -23,22 +22,29 @@ export default function Home({ properties, port }) {
   }
 
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [term, setTerm] = useState('');
+
   const search = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if ( term ) {
-      const res = await fetch(`${port}/api/search?term=${term}`);
-      const data = await res.json();
-      setBnbs(data);
-    } else {
-      const res = await fetch(`${port}/api/getBnbData`);
-      const data = await res.json();
-      setBnbs(data);
+    try {
+      if ( term ) {
+        const res = await fetch(`${port}/api/search?term=${term}`);
+        const data = await res.json();
+        setBnbs(data);
+      } else {
+        const res = await fetch(`${port}/api/getBnbData`);
+        const data = await res.json();
+        setBnbs(data);
+      }
+      setError('');
+    } catch(err) {
+      console.log("something went wrong!?!?!?",err);
+      setError(err.message);
     }
     setIsLoading(false);
   }
-  
 
   return (
     <div>
@@ -90,7 +96,22 @@ export default function Home({ properties, port }) {
             )
           } 
           {
-            bnbs && !isLoading && bnbs.map(property => (
+            error && !isLoading && (
+              <div className="w-full text-center">
+                <h1 className="font-bold text-3xl mt-8">Oops, something went wrong.</h1>
+                <h1 className="text-red-600 text-2xl ">error message: {error}</h1>
+              </div>
+            )
+          }
+          {
+            bnbs.length === 0 && !isLoading && (
+              <div className="w-full text-center">
+                <h1 className="font-bold text-red-600">No matches found.</h1>
+              </div>
+            )
+          }
+          {
+            bnbs.length > 0 && !isLoading && !error && bnbs.map(property => (
 
                 <div className="flex-auto w-1/4 rounded overflow-hidden shadow-lg m-2" key={property._id}>
                   <img className="w-full" src={property.image} alt="" />
